@@ -785,7 +785,7 @@
                 photos: [
                     // Example with a real image placeholder (Replace the URL!)
                     { img: "photo1.jpeg", caption: "First Date", emoji: "☕", color: "photo-gradient-1" },
-                    { img: "photo2.jpg", caption: "cutie pie", emoji: "😳", color: "photo-gradient-2" }, // No image yet, shows emoji
+                    { img: "photo2.JPG", caption: "cutie pie", emoji: "😳", color: "photo-gradient-2" }, // No image yet, shows emoji
                     { img: "photo3.jpeg", caption: "Looks like we can eat", emoji: "🍂", color: "photo-gradient-3" },
                     { img: "photo4.jpeg", caption: "you with my glasses", emoji: "🌙", color: "photo-gradient-4" }
                 ]
@@ -956,8 +956,8 @@
                 playerCard.classList.remove('playing');
                 playBtn.innerText = "▶";
                 
-                // Restore Ambience Volume
-                bgAmbience.volume = 0.3;
+                // Resume Background Ambience
+                bgAmbience.play().catch(e => console.log("Audio play failed", e));
             } else {
                 // Play Fav Song
                 favSong.play();
@@ -965,8 +965,8 @@
                 playerCard.classList.add('playing');
                 playBtn.innerText = "⏸";
                 
-                // Duck Ambience Volume
-                bgAmbience.volume = 0.1;
+                // Pause Background Ambience
+                bgAmbience.pause();
             }
             isFavSongPlaying = !isFavSongPlaying;
         }
@@ -1015,8 +1015,8 @@
             stackContainer.innerHTML = '';
             photoModal.classList.add('active');
 
-            // 1. Duck Background Music (Lower volume)
-            bgAmbience.volume = 0.1;
+            // 1. Pause Background Music
+            bgAmbience.pause();
 
             // 2. Pause Favorite Song if it's playing (to avoid chaos)
             if (isFavSongPlaying) {
@@ -1101,8 +1101,8 @@
                 albumAudio.currentTime = 0;
             }
 
-            // Restore Background Ambience Volume (to background level)
-            bgAmbience.volume = 0.3;
+            // Resume Background Ambience
+            bgAmbience.play().catch(e => console.log("Audio play failed", e));
         }
 
         // --- Letter Logic ---
