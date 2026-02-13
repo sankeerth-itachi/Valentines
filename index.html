@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Be My Valentine?</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff5e00; /* Neon Orange */
+            --secondary-color: #333333; /* Dark Grey */
+            --bg-color: #050505; /* Black */
+            --text-color: #ffffff;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --glow-color: rgba(255, 94, 0, 0.5);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            /* Default state: centered lock for the question */
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden; 
+            background-color: var(--bg-color);
+            /* Dark moody gradient */
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-color);
+        }
+
+        /* Allow scrolling when class is added */
+        body.scroll-active {
+            height: auto;
+            min-height: 100vh;
+            overflow-y: auto;
+            display: block; /* Remove flex centering from body */
+        }
+
+        /* Floating Background Elements */
+        .bg-heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1); /* Default low opacity */
+            font-size: 2rem;
+            animation: floatUp 12s linear infinite;
+            z-index: 0;
+            user-select: none;
+            pointer-events: none;
+            filter: drop-shadow(0 0 5px var(--primary-color));
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- SCREEN 1: THE QUESTION --- */
+        .center-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .container {
+            text-align: center;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 20px;
+            /* Neon Orange Glow */
+            box-shadow: 0 0 25px var(--glow-color);
+            z-index: 10;
+            max-width: 90%;
+            width: 400px;
+            border: 2px solid var(--primary-color);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            margin: 0 0 0.5rem 0;
+            line-height: 1.2;
+            text-shadow: 0 0 10px rgba(255, 94, 0, 0.4);
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #ddd;
+        }
+
+        .gif-container {
+            margin-bottom: 15px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .cute-emoji {
+            font-size: 5rem;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 0 10px var(--primary-color));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            min-height: 50px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #yesBtn {
+            background-color: var(--primary-color);
+            color: black;
+            box-shadow: 0 0 15px var(--glow-color);
+            z-index: 20;
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.05);
+            background-color: #ff7b00;
+            box-shadow: 0 0 25px var(--primary-color);
+        }
+
+        #noBtn {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            z-index: 15;
+            transition: top 0.2s ease, left 0.2s ease;
+        }
+
+        /* --- SCREEN 2: OUR JOURNEY (Initially Hidden) --- */
+        #journeySection {
+            display: none; /* Hidden by default */
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .journey-header {
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease;
+        }
+        
+        .journey-header h1 {
+            color: var(--primary-color);
+        }
+
+        /* TIMER STYLES */
+        .timer-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .timer-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 auto 40px auto; /* Centered with bottom margin */
+            max-width: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 0 15px rgba(255, 94, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        /* MUSIC PLAYER STYLES */
+        .music-section-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .player-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 400px;
+            margin: 0 auto 50px auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 0 20px rgba(255, 94, 0, 0.15);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vinyl-container {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .vinyl-disk {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: repeating-radial-gradient(
+                #111 0, 
+                #111 2px, 
+                #222 3px, 
+                #222 4px
+            );
+            border: 2px solid #333;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vinyl-label {
+            width: 30%;
+            height: 30%;
+            background: var(--primary-color);
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        /* Animation class for playing state */
+        .vinyl-disk.spinning {
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .song-info {
+            text-align: left;
+            flex-grow: 1;
+            z-index: 2;
+        }
+
+        .song-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .song-artist {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+        }
+
+        .play-btn-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: none;
+            color: black;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--glow-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .play-btn-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
+        /* Audio visualizer bars (cosmetic) */
+        .visualizer {
+            display: flex;
+            gap: 3px;
+            height: 20px;
+            align-items: flex-end;
+            margin-top: 5px;
+        }
+        .bar {
+            width: 3px;
+            background-color: var(--primary-color);
+            animation: bounceBar 1s infinite ease-in-out;
+            opacity: 0.5;
+        }
+        .player-card.playing .bar {
+            opacity: 1;
+        }
+        .player-card:not(.playing) .bar {
+            animation: none;
+            height: 2px !important;
+        }
+        
+        @keyframes bounceBar {
+            0%, 100% { height: 5px; }
+            50% { height: 100%; }
+        }
+
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        /* Mobile adjustments for timer */
+        @media (max-width: 600px) {
+            .timer-container {
+                gap: 10px;
+                padding: 15px;
+                width: 90%;
+            }
+            .time-value {
+                font-size: 1.5rem;
+            }
+            .time-label {
+                font-size: 0.6rem;
+            }
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            /* Removed slideUp animation so cards can animate individually */
+        }
+
+        .album-card {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            cursor: pointer;
+            
+            /* Initial state for scroll reveal (Hidden) */
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #333;
+        }
+
+        /* Class added by JS when scrolled into view */
+        .album-card.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hover Effect - Active only after reveal */
+        .album-card.reveal:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--glow-color);
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .album-cover {
+            width: 100%;
+            height: 120px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            border: 1px solid #444;
+        }
+
+        .album-title {
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .album-date {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* --- PHOTOCARD STACK MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85); /* Darker overlay */
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .stack-container {
+            position: relative;
+            width: 280px;
+            height: 400px;
+        }
+
+        .photocard {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            padding: 15px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s ease, opacity 0.3s;
+            cursor: pointer;
+            /* Border to make it look like a photo */
+            border-bottom: 40px solid #1a1a1a; 
+            border: 1px solid #444;
+        }
+
+        .photo-inner {
+            flex: 1;
+            background: #000;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Darker / Edgy Gradients */
+        .photo-gradient-1 { background: linear-gradient(135deg, #ff5e00 0%, #000000 100%); } /* Orange/Black */
+        .photo-gradient-2 { background: linear-gradient(135deg, #434343 0%, #000000 100%); } /* Metal */
+        .photo-gradient-3 { background: linear-gradient(135deg, #ff914d 0%, #ff5e00 100%); } /* Bright Orange */
+        .photo-gradient-4 { background: linear-gradient(135deg, #1f1f1f 0%, #b8860b 100%); } /* Gold/Dark */
+
+        .photo-caption {
+            text-align: center;
+            margin-top: 10px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .instruction-hint {
+            position: absolute;
+            bottom: -50px;
+            width: 100%;
+            text-align: center;
+            color: #888;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            animation: pulse 2s infinite;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1010;
+        }
+
+        /* --- LOVE LETTER STYLES --- */
+        .letter-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px var(--glow-color);
+            z-index: 900; /* Below modal, above content */
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: floatBtn 3s ease-in-out infinite;
+        }
+
+        .letter-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 0 30px var(--primary-color);
+        }
+
+        @keyframes floatBtn {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .letter-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .letter-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .letter-paper {
+            background: #fdfbf7; /* Paper color */
+            width: 90%;
+            max-width: 500px;
+            min-height: 60vh;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            position: relative;
+            transform: translateY(50px);
+            transition: transform 0.5s;
+            color: #333;
+            font-family: 'Dancing Script', cursive; /* Handwritten font */
+            background-image: linear-gradient(#fdfbf7 0%, #fdfbf7 95%, #e0e0e0 100%); /* Slight paper texture feel */
+        }
+
+        .letter-modal.active .letter-paper {
+            transform: translateY(0);
+        }
+
+        .letter-content h2 {
+            text-align: center;
+            color: #d62828;
+            font-size: 2.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .letter-content p {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: #4a4a4a;
+        }
+
+        .close-letter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #aaa;
+            background: none;
+            border: none;
+        }
+
+        .close-letter:hover {
+            color: #d62828;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            animation: confettiFall 3s linear forwards;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 2rem 1.5rem; width: 85%; }
+            h1 { font-size: 2.5rem; }
+            .stack-container { width: 85vw; height: 60vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Hearts -->
+    <div id="bg-hearts-container"></div>
+
+    <!-- SCREEN 1: Question -->
+    <div class="center-wrapper" id="questionSection">
+        <div class="container">
+            <div class="gif-container">
+                <div class="cute-emoji">🥺</div>
+            </div>
+            <h1>Will you be my Valentine?</h1>
+            <p>I promise to get you chocolate!</p>
+            <div class="buttons">
+                <button id="yesBtn">Yes!</button>
+                <button id="noBtn">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: Journey Gallery -->
+    <div id="journeySection">
+        <div class="journey-header">
+            <h1>Yay! I knew it! 🧡</h1>
+            <p>So glad to have you in my life.</p>
+        </div>
+        
+        <!-- LIVE TIMER SECTION -->
+        <div class="timer-title">It's been...</div>
+        <div class="timer-container" id="timer">
+            <div class="time-unit"><span class="time-value">0</span><span class="time-label">Days</span></div>
+            <div class="time-unit"><span class="time-value">0</span><span class="time-label">Hours</span></div>
+            <div class="time-unit"><span class="time-value">0</span><span class="time-label">Mins</span></div>
+            <div class="time-unit"><span class="time-value">0</span><span class="time-label">Secs</span></div>
+        </div>
+        <p style="margin-top: -30px; margin-bottom: 50px; color: #888; font-size: 0.9rem;">...since we first met</p>
+
+        <!-- MUSIC PLAYER SECTION -->
+        <div class="music-section-title">The song that reminds me of you...</div>
+        <div class="player-card" id="playerCard">
+            <div class="vinyl-container">
+                <div class="vinyl-disk" id="vinylDisk">
+                    <div class="vinyl-label"></div>
+                </div>
+            </div>
+            
+            <div class="song-info">
+                <div class="song-title">Makes me fell in love</div>
+                <div class="song-artist">6Degrees by Curos</div>
+                <div class="visualizer">
+                    <div class="bar" style="animation-delay: 0s"></div>
+                    <div class="bar" style="animation-delay: 0.2s"></div>
+                    <div class="bar" style="animation-delay: 0.4s"></div>
+                    <div class="bar" style="animation-delay: 0.1s"></div>
+                    <div class="bar" style="animation-delay: 0.3s"></div>
+                </div>
+            </div>
+
+            <button class="play-btn-circle" id="playBtn">▶</button>
+        </div>
+
+        <div class="gallery-grid" id="albumsGrid">
+            <!-- Albums will be injected here by JS -->
+        </div>
+    </div>
+
+    <!-- MODAL: Photo Stack -->
+    <div class="modal-overlay" id="photoModal">
+        <button class="close-modal" onclick="closeModal()">×</button>
+        <div class="stack-container" id="stackContainer">
+            <!-- Photos will be injected here -->
+        </div>
+        <div class="instruction-hint">Tap card to see the next one!</div>
+    </div>
+
+    <!-- FLOATING LETTER BUTTON -->
+    <div class="letter-btn" onclick="openLetter()">
+        💌
+    </div>
+
+    <!-- LETTER MODAL -->
+    <div class="letter-modal" id="letterModal">
+        <div class="letter-paper">
+            <button class="close-letter" onclick="closeLetter()">×</button>
+            <div class="letter-content">
+                <h2>My Babbyyy TwT,</h2>
+                <p>
+                    AAAAAHHHH HAPPY VALENTINES DAYYYY!!! This is our first valentines and i am soo happy that i ended up with you. You make me feel loved.<br><br>
+                    From our first date to this moment, we fought, we laughed , we cried but never stopped loving each other. and we will continue to love each other until we die.<br><br>
+                    Thank you for being my person.<br><br>
+                    Always,<br>
+                    Sankeerth ❤️
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Data: The Albums ---
+        // INSTRUCTIONS: 
+        // 1. To add a real photo, paste the URL inside the quotes for img: ""
+        // 2. If you want to use the emoji style instead, just leave img: "" empty.
+        
+        const albums = [
+            {
+                title: "First Date ><",
+                date: "June 8th 2025",
+                icon: "✨",
+                songUrl: "paperrings.mp3",
+                photos: [
+                    // Example with a real image placeholder (Replace the URL!)
+                    { img: "photo1.jpeg", caption: "First Date", emoji: "☕", color: "photo-gradient-1" },
+                    { img: "photo2.jpg", caption: "cutie pie", emoji: "😳", color: "photo-gradient-2" }, // No image yet, shows emoji
+                    { img: "photo3.jpeg", caption: "Looks like we can eat", emoji: "🍂", color: "photo-gradient-3" },
+                    { img: "photo4.jpeg", caption: "you with my glasses", emoji: "🌙", color: "photo-gradient-4" }
+                ]
+            },
+            {
+                title: "THE MOVIES",
+                date: "June 15th 2025",
+                icon: "☀️",
+                songUrl: "iamyours.mp3",
+                photos: [
+                    { img: "photo5.jpeg", caption: "Beach Trip", emoji: "🏖️", color: "photo-gradient-2" },
+                    { img: "photo6.jpeg", caption: "Road Trip", emoji: "🚗", color: "photo-gradient-1" },
+                    { img: "photo9.jpeg", caption: "Ice Cream", emoji: "🍦", color: "photo-gradient-3" }
+                ]
+            },
+            {
+                title: "Cute You",
+                date: "Oct 5, 2023",
+                icon: "🌙",
+                songUrl: "ificant.mp3",
+                photos: [
+                    { img: "photo10.jpeg", caption: "Movies", emoji: "🍿", color: "photo-gradient-4" },
+                    { img: "photo11.jpeg", caption: "Deep Talks", emoji: "💬", color: "photo-gradient-1" },
+                    { img: "photo12.jpeg", caption: "Cuddles", emoji: "🫂", color: "photo-gradient-2" },
+                    { img: "photo13.jpeg", caption: "Movies", emoji: "🍿", color: "photo-gradient-4" },
+                    { img: "photo14.jpeg", caption: "Deep Talks", emoji: "💬", color: "photo-gradient-1" },
+                    { img: "photo15.jpeg", caption: "Cuddles", emoji: "🫂", color: "photo-gradient-2" }
+                ]
+            },
+            {
+                title: "Anniversary",
+                date: "Jan 15, 2024",
+                icon: "🧡",
+                songUrl: "divine.mp3",
+                photos: [
+                    { img: "photo16.jpeg", caption: "Cheers!", emoji: "🥂", color: "photo-gradient-1" },
+                    { img: "photo17.jpeg", caption: "Fancy Dinner", emoji: "🍝", color: "photo-gradient-3" },
+                    { img: "photo18.jpeg", caption: "Forever", emoji: "💑", color: "photo-gradient-4" }
+                ]
+            },
+            {
+                title: "Future Dreams",
+                date: "Coming Soon...",
+                icon: "🚀",
+                songUrl: "nights.mp3",
+                photos: [
+                    { img: "photo19.jpeg", caption: "Travel", emoji: "✈️", color: "photo-gradient-2" },
+                    { img: "photo20.jpeg", caption: "Our Home", emoji: "🏠", color: "photo-gradient-1" },
+                    { img: "photo21.jpeg", caption: "Adventures", emoji: "🏔️", color: "photo-gradient-3" },
+                    { img: "photo22.jpeg", caption: "Adventures", emoji: "🏔️", color: "photo-gradient-3" }
+                ]
+            }
+        ];
+
+        // --- Elements ---
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const questionSection = document.getElementById('questionSection');
+        const journeySection = document.getElementById('journeySection');
+        const albumsGrid = document.getElementById('albumsGrid');
+        const photoModal = document.getElementById('photoModal');
+        const stackContainer = document.getElementById('stackContainer');
+        const bgContainer = document.getElementById('bg-hearts-container');
+        const playBtn = document.getElementById('playBtn');
+        const vinylDisk = document.getElementById('vinylDisk');
+        const playerCard = document.getElementById('playerCard');
+
+        // --- Audio Setup ---
+        
+        // 1. Background Ambience (Plays immediately after "Yes")
+        const bgAmbienceUrl = "TaylorLover.mp3"; 
+        const bgAmbience = new Audio(bgAmbienceUrl);
+        bgAmbience.loop = true;
+        bgAmbience.volume = 0.3; 
+        
+        // 2. Favorite Song (Vinyl Player - Only plays on click)
+        const favSongUrl = "6degrees.mp3"; 
+        const favSong = new Audio(favSongUrl);
+        favSong.loop = true;
+        favSong.volume = 1.0;
+        let isFavSongPlaying = false;
+
+        // --- Logic: Run Away Button ---
+        function moveButton() {
+            const btnRect = noBtn.getBoundingClientRect();
+            const margin = 20; 
+            const maxX = window.innerWidth - btnRect.width - margin;
+            const maxY = window.innerHeight - btnRect.height - margin;
+            const randomX = Math.max(margin, Math.random() * maxX);
+            const randomY = Math.max(margin, Math.random() * maxY);
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+            const randomRot = (Math.random() * 20) - 10;
+            noBtn.style.transform = `rotate(${randomRot}deg)`;
+        }
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
+
+        // --- Logic: Yes Button (Transition to Journey) ---
+        yesBtn.addEventListener('click', () => {
+            // 1. Explode confetti
+            createConfetti();
+            
+            // 2. Start Background Ambience (Continuous)
+            bgAmbience.play().catch(e => console.log("Audio play failed (browser might require interaction)", e));
+
+            // 3. Hide question, show journey
+            questionSection.style.opacity = '0';
+            setTimeout(() => {
+                questionSection.style.display = 'none';
+                
+                // Allow scrolling on body
+                document.body.classList.add('scroll-active');
+                document.body.style.display = 'block'; // Remove flex centering
+                
+                // Show content
+                journeySection.style.display = 'block';
+                renderAlbums();
+                startTimer(); // Start the live timer
+            }, 500);
+        });
+
+        // --- Timer Logic ---
+        function startTimer() {
+            const startDate = new Date('2025-06-08T00:00:00'); // Your Start Date
+            const timerContainer = document.getElementById('timer');
+
+            function update() {
+                const now = new Date();
+                const diff = now - startDate;
+
+                // Simple handling for future dates (just in case)
+                if (diff < 0) {
+                     timerContainer.innerHTML = '<div class="time-unit" style="width:100%"><span class="time-value" style="font-size:1.2rem">Coming Soon!</span></div>';
+                     return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+
+                timerContainer.innerHTML = `
+                    <div class="time-unit"><span class="time-value">${days}</span><span class="time-label">Days</span></div>
+                    <div class="time-unit"><span class="time-value">${hours}</span><span class="time-label">Hours</span></div>
+                    <div class="time-unit"><span class="time-value">${minutes}</span><span class="time-label">Mins</span></div>
+                    <div class="time-unit"><span class="time-value">${seconds}</span><span class="time-label">Secs</span></div>
+                `;
+            }
+
+            update(); // Run immediately
+            setInterval(update, 1000); // Update every second
+        }
+
+        // --- Music Player Logic (Favorite Song - Vinyl) ---
+        playBtn.addEventListener('click', () => {
+            toggleFavSong();
+        });
+
+        function toggleFavSong() {
+            if (isFavSongPlaying) {
+                // Pause Fav Song
+                favSong.pause();
+                vinylDisk.classList.remove('spinning');
+                playerCard.classList.remove('playing');
+                playBtn.innerText = "▶";
+                
+                // Restore Ambience Volume
+                bgAmbience.volume = 0.3;
+            } else {
+                // Play Fav Song
+                favSong.play();
+                vinylDisk.classList.add('spinning');
+                playerCard.classList.add('playing');
+                playBtn.innerText = "⏸";
+                
+                // Duck Ambience Volume
+                bgAmbience.volume = 0.1;
+            }
+            isFavSongPlaying = !isFavSongPlaying;
+        }
+
+        // --- Render Albums ---
+        function renderAlbums() {
+            albumsGrid.innerHTML = '';
+
+            // Setup Intersection Observer for the scroll reveal effect
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        // Add reveal class when element enters viewport
+                        entry.target.classList.add('reveal');
+                        // Stop observing once revealed
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1, // Trigger when 10% of card is visible
+                rootMargin: "0px" 
+            });
+
+            albums.forEach((album, index) => {
+                const card = document.createElement('div');
+                card.className = 'album-card';
+                card.onclick = () => openAlbum(index);
+                
+                card.innerHTML = `
+                    <div class="album-cover">${album.icon}</div>
+                    <div class="album-title">${album.title}</div>
+                    <div class="album-date">${album.date}</div>
+                `;
+                albumsGrid.appendChild(card);
+                
+                // Start observing the new card
+                observer.observe(card);
+            });
+        }
+
+        // --- Open Modal & Render Stack ---
+        let albumAudio = null; // Variable to hold the current album song
+
+        function openAlbum(index) {
+            const album = albums[index];
+            stackContainer.innerHTML = '';
+            photoModal.classList.add('active');
+
+            // 1. Duck Background Music (Lower volume)
+            bgAmbience.volume = 0.1;
+
+            // 2. Pause Favorite Song if it's playing (to avoid chaos)
+            if (isFavSongPlaying) {
+                favSong.pause();
+                vinylDisk.classList.remove('spinning');
+                playerCard.classList.remove('playing');
+                playBtn.innerText = "▶";
+                isFavSongPlaying = false;
+            }
+
+            // 3. Play Album specific song
+            if (albumAudio) {
+                albumAudio.pause();
+                albumAudio.currentTime = 0;
+            }
+            if (album.songUrl) {
+                albumAudio = new Audio(album.songUrl);
+                albumAudio.volume = 1.0; // Foreground audio loud
+                albumAudio.play().catch(e => console.log("Interaction required for audio", e));
+            }
+
+            // Render photos in reverse order
+            [...album.photos].reverse().forEach((photo, i) => {
+                const card = document.createElement('div');
+                card.className = 'photocard';
+                const rot = (Math.random() * 10) - 5; 
+                card.style.transform = `rotate(${rot}deg)`;
+                
+                // CHECK IF PHOTO HAS IMAGE URL
+                let contentHtml = '';
+                if (photo.img && photo.img.trim() !== "") {
+                    // Render Image
+                    contentHtml = `<div class="photo-inner" style="background-image: url('${photo.img}'); background-size: cover; background-position: center; border: 1px solid #333;"></div>`;
+                } else {
+                    // Render Emoji Placeholder
+                    contentHtml = `<div class="photo-inner ${photo.color}">${photo.emoji}</div>`;
+                }
+
+                card.innerHTML = `
+                    ${contentHtml}
+                    <div class="photo-caption">${photo.caption}</div>
+                `;
+                
+                // Click to move to back
+                card.onclick = (e) => {
+                    e.stopPropagation(); // Prevent bubbling
+                    swapCard(card);
+                };
+
+                stackContainer.appendChild(card);
+            });
+        }
+
+        function swapCard(card) {
+            // Animate out
+            card.style.transform = `translateX(150px) rotate(20deg)`;
+            card.style.opacity = '0';
+
+            setTimeout(() => {
+                // Move in DOM to the bottom (back of stack)
+                stackContainer.prepend(card);
+                
+                // Reset styles
+                card.style.transition = 'none'; // Snap back instantly
+                card.style.transform = `scale(0.8)`; // Start small
+                card.style.opacity = '1';
+                
+                setTimeout(() => {
+                    card.style.transition = 'transform 0.5s ease, opacity 0.3s';
+                    const rot = (Math.random() * 10) - 5;
+                    card.style.transform = `rotate(${rot}deg)`;
+                }, 50);
+            }, 300); // Wait for transition out
+        }
+
+        window.closeModal = function() {
+            photoModal.classList.remove('active');
+            
+            // Stop Album Song when modal closes
+            if (albumAudio) {
+                albumAudio.pause();
+                albumAudio.currentTime = 0;
+            }
+
+            // Restore Background Ambience Volume (to background level)
+            bgAmbience.volume = 0.3;
+        }
+
+        // --- Letter Logic ---
+        const letterModal = document.getElementById('letterModal');
+
+        window.openLetter = function() {
+            letterModal.classList.add('active');
+        }
+
+        window.closeLetter = function() {
+            letterModal.classList.remove('active');
+        }
+
+        // --- Background Effects ---
+        function createHearts() {
+            // Updated icons: Removed snakes/fire, back to romantic symbols
+            const hearts = ['🖤', '🧡', '✨', '🤍']; 
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('bg-heart');
+                heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 8 + 8) + 's'; // Slower float
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                bgContainer.appendChild(heart);
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#ff5e00', '#ffffff', '#000000', '#ff914d'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        createHearts();
+    </script>
+</body>
+</html>
